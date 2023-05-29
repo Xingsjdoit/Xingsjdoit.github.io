@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>“博客名”</title>
-    <url>/2023/05/27/bo-ke-ming/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
     <title>Hexo-Matery</title>
     <url>/2023/05/27/hexo-matery/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>我是文章摘要…. <span id="more"></span></p>
@@ -27,6 +22,57 @@
       </categories>
       <tags>
         <tag>Hexo-Matery</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>RabbitMQ</title>
+    <url>/2023/05/29/rabbitmq/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>系统内部各个组件/模块可以借助中间件共享信息与资源，除了消息队列之外，常见的中间件还有 RPC 框架、分布式组件、HTTP 服务器、任务调度框架、配置中心、数据库层的分库分表工具和数据迁移工具等等。</p>
+<h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><ol>
+<li><strong>通过异步处理提高系统性能（减少响应所需时间）</strong></li>
+<li><strong>削峰/限流</strong></li>
+<li><strong>降低系统耦合性。</strong></li>
+</ol>
+<h1 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h1><h2 id="1-单机部署"><a href="#1-单机部署" class="headerlink" title="1.单机部署"></a>1.单机部署</h2><p>开启虚拟机，使用FinalShell连接虚拟机</p>
+<p>我们在Centos7虚拟机中使用Docker来安装。</p>
+<h3 id="1-1-下载镜像"><a href="#1-1-下载镜像" class="headerlink" title="1.1.下载镜像"></a>1.1.下载镜像</h3><p>方式一：在线拉取</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> pull rabbitmq:3.8-management<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<p>方式二：从本地加载</p>
+<p>下载镜像包：</p>
+<p>上传到虚拟机中后，使用命令加载镜像即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> load <span class="token parameter variable">-i</span> mq.tar<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<h3 id="1-2-运行MQ"><a href="#1-2-运行MQ" class="headerlink" title="1.2.运行MQ"></a>1.2.运行MQ</h3><p>执行下面的命令来运行MQ容器：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">systemctl  start <span class="token function">docker</span> <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> <span class="token function">rm</span> <span class="token parameter variable">-f</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">docker</span> <span class="token function">ps</span> <span class="token parameter variable">-a</span> <span class="token parameter variable">-q</span><span class="token variable">)</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> run <span class="token punctuation">\</span>
+ <span class="token parameter variable">-e</span> <span class="token assign-left variable">RABBITMQ_DEFAULT_USER</span><span class="token operator">=</span>itcast <span class="token punctuation">\</span>
+ <span class="token parameter variable">-e</span> <span class="token assign-left variable">RABBITMQ_DEFAULT_PASS</span><span class="token operator">=</span><span class="token number">123321</span> <span class="token punctuation">\</span>
+ <span class="token parameter variable">-v</span> mq-plugins:/plugins <span class="token punctuation">\</span>
+ <span class="token parameter variable">--name</span> mq <span class="token punctuation">\</span>
+ <span class="token parameter variable">--hostname</span> mq <span class="token punctuation">\</span>
+ <span class="token parameter variable">-p</span> <span class="token number">15672</span>:15672 <span class="token punctuation">\</span>
+ <span class="token parameter variable">-p</span> <span class="token number">5672</span>:5672 <span class="token punctuation">\</span>
+ <span class="token parameter variable">-d</span> <span class="token punctuation">\</span>
+ rabbitmq:3-management<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="1-3访问UI界面"><a href="#1-3访问UI界面" class="headerlink" title="1.3访问UI界面"></a>1.3访问UI界面</h3><p>虚拟机ip + 15672</p>
+]]></content>
+      <categories>
+        <category>消息队列</category>
+        <category>中间件</category>
+      </categories>
+      <tags>
+        <tag>RabbitMQ</tag>
       </tags>
   </entry>
 </search>
