@@ -75,4 +75,80 @@
         <tag>RabbitMQ</tag>
       </tags>
   </entry>
+  <entry>
+    <title>云集-伙伴匹配系统</title>
+    <url>/2023/05/30/yun-ji-huo-ban-pi-pei-xi-tong/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>项目优化</p>
+ <span id="more"></span>
+
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h3 id="1-为了首页查询用户接口的性能，插入100-w-假数据"><a href="#1-为了首页查询用户接口的性能，插入100-w-假数据" class="headerlink" title="1.  为了首页查询用户接口的性能，插入100 w 假数据"></a>1.  为了首页查询用户接口的性能，插入100 w 假数据</h3><ul>
+<li><p>方法一：for循环插入</p>
+<blockquote>
+<p>每次sql连接建立和关闭花费大量时间，浪费性能</p>
+</blockquote>
+</li>
+<li><p>方法二：批量插入MyBatis-Plus自带的 saveBatch 方法（9 sec in 10w）</p>
+<blockquote>
+<p>预编译优化，只编译一次sql，所以快，但是本质还是for循环一条一条插入</p>
+</blockquote>
+</li>
+<li><p>方法三：mybatis plus 分批插入 + java8 异步并发 CompletableFuture.runAsync()，分批插入10w数据（4 sec in 10 w）</p>
+</li>
+</ul>
+<h3 id="2-主页分页展示100w数据，需要2-sec"><a href="#2-主页分页展示100w数据，需要2-sec" class="headerlink" title="2. 主页分页展示100w数据，需要2 sec"></a>2. 主页分页展示100w数据，需要2 sec</h3><p>redis 缓存主页数据，（缓存优化至600ms）</p>
+<p>第一次打开首页，太慢==》定时任务</p>
+<blockquote>
+<p>Spring Scheduler</p>
+<p>cron在线表达式</p>
+</blockquote>
+<p>多机器定时任务不重复执行==》分布式锁(redisson)</p>
+<blockquote>
+<ol>
+<li><p>用完锁要释放,腾地方finally</p>
+</li>
+<li><p>锁一定要加过期时间,</p>
+<p>没来得及释放锁，因系统故障无法执行释放锁的命令,导致其它线程都无法获得锁，造成死锁。</p>
+</li>
+<li><p>程序执行40s,而锁30过期,也会出现多个线程同时执行</p>
+<blockquote>
+<ol>
+<li>可能出现连锁效应: 释放掉别人的锁,</li>
+</ol>
+<p>解决: 释放锁的时候检查锁的标识,如果不是自己的标识,就不释放</p>
+<ol>
+<li>锁过期时间 续期（redisson看门狗机制）开启一个监听线程，如果方法还没执行完，就帮你重置redis锁的过期时间</li>
+</ol>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol>
+<li><p>释放锁的时候检查锁的标识,如果不是自己的标识,就不释放: 可能先判断出是自己的锁, 但这时锁过期了, 最后仍然释放了别人的锁</p>
+<p>解决: 使用lua 脚本, 保证 判断+ 释放 是一个原子操作</p>
+</li>
+</ol>
+</blockquote>
+<h3 id="3-事务"><a href="#3-事务" class="headerlink" title="3. 事务"></a>3. 事务</h3><p>创建队伍接口：设计team、user-team表的插入，保证数据一致性，需要事务注解</p>
+<h3 id="4-推荐用户"><a href="#4-推荐用户" class="headerlink" title="4. 推荐用户"></a>4. 推荐用户</h3><p>比如针对id为1的用户</p>
+<ol>
+<li>查出所有用户列表 select （id , tags） where tags is not null 加快查询效率（选择指定列，不为null提高查询效率）</li>
+<li>遍历用户列表，<ol>
+<li>获取用户标签json字符串，使用Gson转为标签列表</li>
+<li>使用编辑距离算法计算两个标签列表的最小编辑距离</li>
+<li>使用zset，保存结果，最小编辑距离作为score，用户id作为value</li>
+</ol>
+</li>
+<li>存入redis</li>
+</ol>
+<p>进行匹配时，先查询redis</p>
+<p>针对重点用户列表，提前进行相似用户的计算，缓存预热</p>
+]]></content>
+      <categories>
+        <category>优化</category>
+      </categories>
+      <tags>
+        <tag>云集</tag>
+      </tags>
+  </entry>
 </search>
